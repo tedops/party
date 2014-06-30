@@ -7,3 +7,7 @@ include/
 #*.*#
 *.ox
 *.orig
+README.txt
+LICENSE.txt
+MANIFEST.in
+party/test/test_party.py
