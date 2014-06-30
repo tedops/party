@@ -20,24 +20,24 @@ Some example code:
 
     ####  FIND ARTIFACT BY NAME
     myFile = "my-file.rpm"
-    result = artifact.find_artifact(myFile)
+    result = artifact.find(myFile)
 
     ####  FIND ARTIFACT BY PROPERTIES
     file_props = {
         "build.number": 999,
         "rpm.version": "1.0.0.999"
     }
-    result = artifact.find_artifact_by_properties(file_props)
+    result = artifact.find_by_properties(file_props)
 
     ####  GET SPECIFIC ARTIFACT PROPERTIES
     specific_properties = [ "build.number", "rpm.version" ]
-    result = artifact.get_artifact_properties(artifact, specific_properties)    
+    result = artifact.get_properties(artifact, specific_properties)    
 
     ####  SET PROPERTIES ON AN ARTIFACT
     new_properties = {
         "myKey": "myValue"
     }
-    result = artifact.set_artifact_properties(artifact, new_properties)
+    result = artifact.set_properties(artifact, new_properties)
 
 ## Configuring Party
 
@@ -49,8 +49,8 @@ Party class instances load in the values from ```party_config.py```. However, th
 The following is a list of config keys (CONFIG_KEY above) and descriptions of their purposes:
     
     artifactory_url - Base URL to your Artifactory instance.
-        search_prop - URI stem to access the property search endpoint.
-        search_name - URI stem to access the artifact quick search endpoint.
+        search_prop - Artifactory API endpoint used for the property search.
+        search_name - Artifactory API endpoint to access quick search.
            username - Username credential to use to connect to the Artifactory instance.
            password - Base64 encoded password credential used to connect to the Artifactory instance.
             headers - JSON (Python dict) of headers to send in the Artifactory queries. 
@@ -63,10 +63,10 @@ The following is a list of config keys (CONFIG_KEY above) and descriptions of th
 
 ----
 
-#### find_artifact
+#### find
 **Description:** Find an artifact by filename.<br/>
 **Produces:** (String) Class instance members "uri" and "name".<br/>
-**Usage:** ```find_artifact(String)```<br/>
+**Usage:** ```find(String)```<br/>
 **Sample Output:**<br/>
     
     {
@@ -75,10 +75,10 @@ The following is a list of config keys (CONFIG_KEY above) and descriptions of th
         } ]
     }
 
-#### find_artifact_by_properties
+#### find_by_properties
 **Description:** Find an artifact by its properties.<br/>
 **Produces:** (String) Class instance members "uri" and "name".<br/>
-**Usage:** ```find_artifact_by_properties(Dict)```. Any number of properties can be specified within the dict.<br/>
+**Usage:** ```find_by_properties(Dict)```. Any number of properties can be specified within the dict.<br/>
 **Sample Output:**
 
     {
@@ -87,10 +87,10 @@ The following is a list of config keys (CONFIG_KEY above) and descriptions of th
         } ]
     }
 
-#### get_artifact_properties
+#### get_properties
 **Description:** Get specific properties from an artifact. <br/>
 **Produces:** Class instance members of any found properties, referenced by specified keys.<br/>
-**Usage:** ```get_artifact_properties(String, Dict)```. Any number of properties can be specified within the dict. Designed to be used in conjunction with the find methods to produce the filename.<br/>
+**Usage:** ```get_properties(String, Dict)```. Any number of properties can be specified within the dict. Designed to be used in conjunction with the find methods to produce the filename.<br/>
 **Sample Output:**
 
     {
@@ -101,19 +101,10 @@ The following is a list of config keys (CONFIG_KEY above) and descriptions of th
         u'uri': u'http://my-server/artifactory/api/storage/libs-snapshot-local/com/mycompany/api/my-artifact/1.0.0-SNAPSHOT/my-artifact-1.0.0.999-1.noarch.rpm/'
     }
 
-#### set_artifact_properties
-**Description:** Set specific properties on an artifact. **NOTE:** This will not set properties on your current class instance. Properties set using this method must be subsequently retrieved using the ```get_artifact_properties``` method.<br/>
+#### set_properties
+**Description:** Set specific properties on an artifact. **NOTE:** This will not set properties on your current class instance. Properties set using this method must be subsequently retrieved using the ```get_properties``` method.<br/>
 **Produces:** HTTP status code. Return code of 204 is successful.<br/>
-**Usage:** ```set_artifact_properties(String, Dict)```. Any number of properties can be specified within the dict. Please refer to http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for a description of status codes.<br/>
+**Usage:** ```set_properties(String, Dict)```. Any number of properties can be specified within the dict. Please refer to http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for a description of status codes.<br/>
 **Sample Output:**
 
     200
-
-
-## TODO
-* In ```get_artifact_properties```, ampersands (&) are changed to pipes (|) to satisfy the API requirement for accepting multiple properties within queries. A more elegant solution should be implemented for this.
-
-* Implement all similar methods using **kwargs or similar to reduce duplicate code.
-
-* Figure out how to drop the index reference when accessing properties.
-

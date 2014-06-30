@@ -17,7 +17,7 @@ class Party:
 
 		return response
 
-	def find_artifact_by_properties(self, properties):
+	def find_by_properties(self, properties):
 		"""
 		Look up an artifact, or artifacts, in Artfiactory by
 		using properties that have been set on the artifact.
@@ -45,7 +45,7 @@ class Party:
 		return "OK"
 
 
-	def find_artifact(self, filename):
+	def find(self, filename):
 		"""
 		Look up an artifact, or artifacts, in Artfiactory by
 		its filename.
@@ -87,7 +87,7 @@ class Party:
 		return "OK"
 
 
-	def set_artifact_properties(self, file_url, properties):
+	def set_properties(self, file_url, properties):
 		"""
 		Set properties on an artifact.
 		@param: file_url - URL of artifact on which to set properties.

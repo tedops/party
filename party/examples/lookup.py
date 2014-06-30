@@ -2,18 +2,17 @@
 # Sample usage of Party
 # Extracting artifact properties
 # 
-import sys
+import os, sys
 from party import *
 
 artifact = Party()
 
 # Example properties used assuming Bamboo CI
 myProps = {
-	"build.name": "UI - Master - Default Job", # ${bamboo.buildPlanName}
-	"build.number": 999, # ${bamboo.buildNumber}
+	"build.number": 189, # ${bamboo.buildNumber}
 }
 
-res = artifact.find_artifact_by_properties(myProps)
+res = artifact.find_by_properties(myProps)
 if res is None:
 	print "No artifact found."
 	sys.exit(1)
