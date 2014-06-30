@@ -1,0 +1,9 @@
+bin/
+lib/
+include/
+*.pyc
+.Python
+*.*~
+#*.*#
+*.ox
+*.orig
