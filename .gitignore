@@ -1,6 +1,7 @@
 bin/
 lib/
 include/
+dist/
 *.pyc
 .Python
 *.*~
@@ -9,5 +10,6 @@ include/
 *.orig
 README.txt
 LICENSE.txt
-MANIFEST.in
+# MANIFEST.in
 party/test/test_party.py
+
