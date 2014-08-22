@@ -7,7 +7,7 @@ setup(
     author_email='tsheibar@gmail.com',
     packages=['party'],
     package_dir={'party': 'party'},
-    package_data={'':['Readme.md']},
+    package_data={'':['README.md']},
     include_package_data=True,
     url='http://pypi.python.org/pypi/Party/',
     license='LICENSE.txt',
