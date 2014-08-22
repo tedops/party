@@ -1,1 +1,2 @@
-v1.5, 29/06/2014 -- Initial Release.
+v1.5.1, 22/08/2014 -- Fixed package to cleanly 'from party import *' 
+v1.5,   29/06/2014 -- Initial Release.
