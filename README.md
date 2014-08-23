@@ -13,9 +13,9 @@ Python client for the Artifactory API
 Some example code:
 
 ```python
-from party import *
+import party
 
-artifact = Party()
+artifact = party.Party()
 
 artifact.artifactory_url = "http://myserver.com/api"  # <= Runtime config change
 
@@ -46,7 +46,7 @@ result = artifact.set_properties(artifact, new_properties)
 Party class instances load in the values from ```party_config.py```. However, those values can be overridden directly in the file, or at runtime using:
 
 ```python
-    artifact = Party()
+    artifact = party.Party()
     artifact.CONFIG_KEY = "new value"
 ```
 
