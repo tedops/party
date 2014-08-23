@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(
-    name='Party',
-    version='1.5.0',
+    name='party',
+    version='1.5.3',
     author='Ted Sheibar',
     author_email='tsheibar@gmail.com',
     packages=['party'],
