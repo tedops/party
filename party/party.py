@@ -122,12 +122,13 @@ class Party:
 	    if repositories:
 		return repositories
 	      
-	    return False
+	    return None
 
 
 	def find_by_pattern(self, ptrn, specific_repo=None, repo_type=None):
 	    # Create pattern list
 	    patterns = []
+	    # Adjust this range to determine how many levels deep on the path to search
 	    for p in range(1, 30):
 		patterns.append("*/" * p)
 	    if specific_repo is not None:
@@ -147,9 +148,14 @@ class Party:
 		      if response['files']:
 			  for i in response['files']:
 			      results.append("%s/%s" % (response['repoUri'], i))
-			  return results
+			      setattr(self, '%s' % ("files",), i)
 		      else:
 			  results = None
 		  except KeyError:
-		      pass   
-	    
+		      pass
+		    
+	    import pdb ; pdb.set_trace()
+	    if not results:
+		return None
+	      
+	    return "OK"
