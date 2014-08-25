@@ -1,4 +1,3 @@
-# package
+__title__ = "party"
+__author__ = "Ted Sheibar"
 
-__title__ = 'party'
-__author__ = 'Ted Sheibar'

@@ -1,3 +1,2 @@
-v1.5.3, 22/08/2014 -- Namespace changed to proper 'party'. Name reflects that now
-v1.5.1, 22/08/2014 -- Fixed package to cleanly 'from party import *' 
+v1.5.1, 22/08/2014 -- Namespace changed to proper 'party'. Name reflects that now. Fixed package to cleanly 'from party import *' 
 v1.5,   29/06/2014 -- Initial Release.

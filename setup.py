@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='party',
-    version='1.5.3',
+    version='1.5.1',
     author='Ted Sheibar',
     author_email='tsheibar@gmail.com',
     packages=['party'],

@@ -47,7 +47,7 @@ class Party:
 
 	def find(self, filename):
 		"""
-		Look up an artifact, or artifacts, in Artfiactory by
+		Look up an artifact, or artifacts, in Artifactory by
 		its filename.
 		@param: filename - Filename of the artifact to search.
 		"""
@@ -100,3 +100,56 @@ class Party:
 			return None
 
 		return "OK"
+
+	def get_repositories(self, repo_type=None):
+	    """
+	    Helper method to get repository names. Defaults to all.
+	    @param: repo_type - type of repository to return (local, remote, virtual)
+	    """
+	    # Current Artifactory API doesn't allow multiple types to be
+	    # selected, so let's allow specifying at least one type.
+	    repositories = []
+	    if repo_type is None:
+		query = "%s/%s" % (self.artifactory_url, self.search_repos)
+	    else:
+		query = "%s/%s?type=%s" % (self.artifactory_url, self.search_repos, repo_type)
+	    raw_response = self.query_artifactory(query)
+	    if raw_response.status_code == 404:
+		return None
+	    response = json.loads(raw_response.text)
+	    for repo in response:
+		repositories.append(repo["key"])
+	    if repositories:
+		return repositories
+	      
+	    return False
+
+
+	def find_by_pattern(self, ptrn, specific_repo=None, repo_type=None):
+	    # Create pattern list
+	    patterns = []
+	    for p in range(1, 30):
+		patterns.append("*/" * p)
+	    if specific_repo is not None:
+		repos = ["%s" % specific_repo]
+	    else:
+		repos = self.get_repositories(repo_type)
+		
+	    for repo in repos:
+	      for pattern in patterns:
+		  query = "%s/search/pattern?pattern=%s:%s*%s*" % (self.artifactory_url, repo, pattern, ptrn)
+		  raw_response = self.query_artifactory(query)
+		  if raw_response.status_code == 404:
+		      return None
+		  response = json.loads(raw_response.text)
+		  try:
+		      results = []
+		      if response['files']:
+			  for i in response['files']:
+			      results.append("%s/%s" % (response['repoUri'], i))
+			  return results
+		      else:
+			  results = None
+		  except KeyError:
+		      pass   
+	    
