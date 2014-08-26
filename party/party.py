@@ -127,7 +127,7 @@ class Party:
 	return None
 
 
-    def find_by_pattern(self, ptrn, specific_repo=None, repo_type=None, max_depth=10):
+    def find_by_pattern(self, filename, specific_repo=None, repo_type=None, max_depth=10):
 	"""
 	Look up an artifact, or artifacts, in Artifactory by
 	its partial filename (can use globs).
@@ -138,6 +138,14 @@ class Party:
 	"""
 	# Create pattern list
 	# TODO: Add parameter verification
+	
+	# Add in bookend globs to aid the search, but not if 
+	# they're already there, cuz Artifactory doesn't like that
+	if filename[-1] != "*":
+	  filename = "%s*" % filename
+	if filename[0] != "*":
+	  filename = "*%s" % filename
+	
 	patterns = []
 	# Adjust this range to determine how many levels deep on the path to search
 	for p in range(1, max_depth):
@@ -149,7 +157,7 @@ class Party:
 	results = []
 	for repo in repos:
 	    for pattern in patterns:
-		query = "%s/search/pattern?pattern=%s:%s*%s*" % (self.artifactory_url, repo, pattern, ptrn)
+		query = "%s/search/pattern?pattern=%s:%s%s" % (self.artifactory_url, repo, pattern, filename)
 		raw_response = self.query_artifactory(query)
 		if raw_response.status_code == 404:
 		    return None
