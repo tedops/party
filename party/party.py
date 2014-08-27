@@ -6,42 +6,48 @@ class Party:
     files = []	
 
     def __init__(self):
+	# Set instance variables for every value in party_config
 	for k, v in party_config.iteritems():
 	    setattr(self, '%s' % (k,), v)
 
-    def query_artifactory(self, query, query_type='get', payload=None):
+    def query_artifactory(self, query, query_type='get'):
+	"""
+	Send request to Artifactory API endpoint.
+	@param: query - Required. the URL (including endpoint) to send to the Artifactory API
+	@param: query_type - Optional. CRUD method. Defaults to 'get'.
+	"""
 	if query_type.lower() == "get":
-		response = requests.get(query, auth=(self.username, base64.b64decode(self.password)), headers=self.headers)
+	    response = requests.get(query, auth=(self.username, base64.b64decode(self.password)), headers=self.headers)
 	elif query_type.lower() == "put":
-		response = requests.put(query, data=query.split('?',1)[1], auth=(self.username, base64.b64decode(self.password)), headers=self.headers)
+	    response = requests.put(query, data=query.split('?',1)[1], auth=(self.username, base64.b64decode(self.password)), headers=self.headers)
 	if query_type.lower() == "post":
-		pass
+	    pass
 
 	return response
 
     def find_by_properties(self, properties):
 	"""
-	Look up an artifact, or artifacts, in Artfiactory by
-	using properties that have been set on the artifact.
+	Look up an artifact, or artifacts, in Artifactory by using artifact properties.
 	@param: properties - List of properties to use as search criteria.
 	"""
 	query = "%s/%s?%s" % (self.artifactory_url, self.search_prop, urllib.urlencode(properties))
 	raw_response = self.query_artifactory(query)
 	if raw_response.status_code is not 200:
-		return None
+	    return None
 	response = json.loads(raw_response.text)
-	if len(response['results']) < 1:
-		return None
 
 	for item in response['results']:
-		for k, v in item.iteritems():
-			setattr(self, '%s' % (k,), v)
+	    for k, v in item.iteritems():
+		setattr(self, '%s' % (k,), v)
+
+	if not response['results']:
+	    return None
 
 	artifact_list = [ ]
 	for u in response['results']:
-		artifact_list.append(os.path.basename(u['uri']))
+	    artifact_list.append(os.path.basename(u['uri']))
 
-	setattr(self, 'list', artifact_list)
+	self.files = artifact_list
 	setattr(self, 'count', len(artifact_list))
 	
 	return "OK"
@@ -75,16 +81,16 @@ class Party:
 	@param: properties - Optional. List of properties to help filter results.
 	"""
 	if properties:
-		query = "%s/?properties=%s" % (filename, ",".join(properties))
+	    query = "%s/?properties=%s" % (filename, ",".join(properties))
 	else:
-		query = "%s/?properties" % filename
+	    query = "%s/?properties" % filename
 
 	raw_response = self.query_artifactory(query)
 	if raw_response.status_code == 404:
-		return None
+	    return None
 	response = json.loads(raw_response.text)
 	for key, value in response.iteritems():
-		setattr(self, '%s' % (key,), value)
+	    setattr(self, '%s' % (key,), value)
 
 	return "OK"
 
@@ -99,7 +105,7 @@ class Party:
 	response = self.query_artifactory(query, "put")
 	match = re.search(r'^20.*$', str(response.status_code))
 	if not match:
-		return None
+	    return None
 
 	return "OK"
 
@@ -115,12 +121,15 @@ class Party:
 	    query = "%s/%s" % (self.artifactory_url, self.search_repos)
 	else:
 	    query = "%s/%s?type=%s" % (self.artifactory_url, self.search_repos, repo_type)
+	    
 	raw_response = self.query_artifactory(query)
 	if raw_response.status_code == 404:
 	    return None
 	response = json.loads(raw_response.text)
+
 	for repo in response:
 	    repositories.append(repo["key"])
+	    
 	if repositories:
 	    return repositories
 	  
@@ -131,13 +140,18 @@ class Party:
 	"""
 	Look up an artifact, or artifacts, in Artifactory by
 	its partial filename (can use globs).
-	@param: ptrn - "pattern" or partial filename to search
-	@param: specific_repo - Optional. Name of Artifactory repo to search
-	@param: repo_type - Optional. Values are local|virtual|remote
+	@param: filename - Required. Filename or partial filename to search.
+	@param: specific_repo - Optional. Name of Artifactory repo to search.
+	@param: repo_type - Optional. Values are local|virtual|remote.
 	@param: max_depth - Optional. How many directories deep to search. Defaults to 10.
 	"""
-	# Create pattern list
-	# TODO: Add parameter verification
+	
+	# Validate specified repo type
+	repo_types = [ "local", "virtual", "remote", None ]
+	if repo_type not in repo_types:
+	    errmsg = "Invalid repo_type '%s' specified (valid types: 'local', 'virtual', 'remote', 'None'.)" % repo_type
+	    raise ValueError(errmsg)
+	    return False
 	
 	# Add in bookend globs to aid the search, but not if 
 	# they're already there, cuz Artifactory doesn't like that
@@ -146,14 +160,18 @@ class Party:
 	if filename[0] != "*":
 	  filename = "*%s" % filename
 	
+	# Create pattern list
 	patterns = []
-	# Adjust this range to determine how many levels deep on the path to search
+	# Adjust max_depth to determine how many (inclusive) directories deep on the path to search
 	for p in range(1, max_depth):
 	    patterns.append("*/" * p)
+	
 	if specific_repo is not None:
-	    repos = ["%s" % specific_repo]
+	    repos = [specific_repo]
 	else:
 	    repos = self.get_repositories(repo_type)
+	    
+	# Cycle through each pattern in each repo to find the artifact
 	results = []
 	for repo in repos:
 	    for pattern in patterns:
@@ -162,16 +180,17 @@ class Party:
 		if raw_response.status_code == 404:
 		    return None
 		response = json.loads(raw_response.text)
+		
 		try:
 		    if response['files']:
 			for i in response['files']:
 			    results.append("%s/%s" % (response['repoUri'], i))
-			    #setattr(self, '%s' % ("files",), i)
 		except KeyError:
 		    pass
-		
+	
 	if not results:
 	    return None
-	  
-	self.files = list(results)
+	
+	# Set the class 'files' variable to have the list of found artifacts
+	self.files = results
 	return "OK"
