@@ -105,10 +105,14 @@ artifactory_url - Base URL to your Artifactory instance.
 **Produces:** (List) Instance variable "files".<br/>
 **Usage:** ```find_by_pattern(String, String, String, Int)```. See Parameters.<br/>
 **Parameters:** ```find_by_pattern(filename, specific_repo, repo_type, max_depth):```
-    - _filename_       - Required. Filename or partial filename to search.
-    - _specific_repo_  - Optional. Specify an existing repository in Artifactory. When set to "None", it searches all repos (default).
-    - _repo_type_      - Optional. Type of repository to search. Valid values are 'local', 'remote', 'virtual', or 'None'.
-    - _max_depth_      - Optional. Number of directories deep to traverse to find the artifact.
+
+```
+     filename - Required. Filename or partial filename to search.<br/>
+specific_repo - Optional. Specify an existing repository in Artifactory. When set to "None", it searches all repos (default).
+    repo_type - Optional. Type of repository to search. Valid values are 'local', 'remote', 'virtual', or 'None'.
+    max_depth - Optional. Number of directories deep to traverse to find the artifact.
+```
+
 **Sample Output:**
 
 ```python
