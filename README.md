@@ -75,7 +75,7 @@ artifactory_url - Base URL to your Artifactory instance.
 
 #### find
 **Description:** Find an artifact by filename.<br/>
-**Produces:** (String) Class instance members "uri" and "name".<br/>
+**Produces:** (String) Instance variables "uri" and "name".<br/>
 **Usage:** ```find(String)```<br/>
 **Sample Output:**<br/>
 
@@ -86,10 +86,9 @@ artifactory_url - Base URL to your Artifactory instance.
     } ]
 }
 ```
-
 #### find_by_properties
 **Description:** Find an artifact by its properties.<br/>
-**Produces:** (String) Class instance members "uri" and "name".<br/>
+**Produces:** (String) Instance variables "uri" and "name".<br/>
 **Usage:** ```find_by_properties(Dict)```. Any number of properties can be specified within the dict.<br/>
 **Sample Output:**
 
@@ -100,6 +99,24 @@ artifactory_url - Base URL to your Artifactory instance.
     } ]
 }
 ```
+
+#### find_by_pattern
+**Description:** Find an artifact by partial filename.<br/>
+**Produces:** (List) Instance variable "files".<br/>
+**Usage:** ```find_by_pattern(String, String, String, Int)```. See Parameters.<br/>
+**Parameters:** ```find_by_pattern(filename, specific_repo, repo_type, max_depth):```
+    - _filename_       - Required. Filename or partial filename to search.
+    - _specific_repo_  - Optional. Specify an existing repository in Artifactory. When set to "None", it searches all repos (default).
+    - _repo_type_      - Optional. Type of repository to search. Valid values are 'local', 'remote', 'virtual', or 'None'.
+    - _max_depth_      - Optional. Number of directories deep to traverse to find the artifact.
+**Sample Output:**
+
+```python
+[
+    u'http://my-server/artifactory/api/storage/libs-snapshot-local/com/mycompany/api/my-artifact/1.0.0-SNAPSHOT/my-artifact-1.0.0.999-1.noarch.rpm'
+]
+```
+
 #### get_properties
 **Description:** Get specific properties from an artifact. <br/>
 **Produces:** Class instance members of any found properties, referenced by specified keys.<br/>
