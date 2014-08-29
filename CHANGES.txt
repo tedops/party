@@ -1,2 +1,8 @@
-v1.5.1, 22/08/2014 -- Namespace changed to proper 'party'. Name reflects that now. Fixed package to cleanly 'from party import *' 
-v1.5,   29/06/2014 -- Initial Release.
+v1.6,	29/08/2014
+-- Namespace changed to proper 'party'. Name reflects that now.
+-- Added unit tests
+-- Added find_by_pattern feature (partial filename)
+-- Moved 'files' to be instance instead of class variable
+-- Various smaller fixes discovered from creating unit tests
+v1.5,   29/06/2014
+-- Initial Release.

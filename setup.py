@@ -1,11 +1,11 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='party',
-    version='1.5.1',
+    version='1.6',
     author='Ted Sheibar',
     author_email='tsheibar@gmail.com',
-    packages=['party'],
+    packages=find_packages(),
     package_dir={'party': 'party'},
     package_data={'':['README.md']},
     include_package_data=True,

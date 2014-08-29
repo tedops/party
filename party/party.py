@@ -2,18 +2,19 @@ import sys, json, requests, urllib, base64, re, os
 from party_config import party_config
 
 class Party:
-
-    files = []	
+    
 
     def __init__(self):
+	self.files = []	
 	# Set instance variables for every value in party_config
 	for k, v in party_config.iteritems():
 	    setattr(self, '%s' % (k,), v)
 
+
     def query_artifactory(self, query, query_type='get'):
 	"""
 	Send request to Artifactory API endpoint.
-	@param: query - Required. the URL (including endpoint) to send to the Artifactory API
+	@param: query - Required. The URL (including endpoint) to send to the Artifactory API
 	@param: query_type - Optional. CRUD method. Defaults to 'get'.
 	"""
 	if query_type.lower() == "get":
@@ -23,6 +24,10 @@ class Party:
 	if query_type.lower() == "post":
 	    pass
 
+	match = re.search(r'^20.*$', str(response.status_code))
+	if not match:
+	    return None
+	  
 	return response
 
     def find_by_properties(self, properties):
@@ -32,8 +37,9 @@ class Party:
 	"""
 	query = "%s/%s?%s" % (self.artifactory_url, self.search_prop, urllib.urlencode(properties))
 	raw_response = self.query_artifactory(query)
-	if raw_response.status_code is not 200:
-	    return None
+	if raw_response is None:
+	    return raw_response
+
 	response = json.loads(raw_response.text)
 
 	for item in response['results']:
@@ -61,8 +67,8 @@ class Party:
 	"""
 	query = "%s/%s?name=%s" % (self.artifactory_url, self.search_name, filename)
 	raw_response = self.query_artifactory(query)
-	if raw_response.status_code is not 200:
-		return None
+	if raw_response is None:
+	    return raw_response
 	response = json.loads(raw_response.text)
 	if len(response['results']) < 1:
 		return None
@@ -86,8 +92,8 @@ class Party:
 	    query = "%s/?properties" % filename
 
 	raw_response = self.query_artifactory(query)
-	if raw_response.status_code == 404:
-	    return None
+	if raw_response is None:
+	    return raw_response
 	response = json.loads(raw_response.text)
 	for key, value in response.iteritems():
 	    setattr(self, '%s' % (key,), value)
@@ -103,9 +109,8 @@ class Party:
 	"""
 	query = "%s?properties=%s" % (file_url, urllib.urlencode(properties).replace('&', '|'))
 	response = self.query_artifactory(query, "put")
-	match = re.search(r'^20.*$', str(response.status_code))
-	if not match:
-	    return None
+	if response is None:
+	    return response
 
 	return "OK"
 
@@ -123,13 +128,14 @@ class Party:
 	    query = "%s/%s?type=%s" % (self.artifactory_url, self.search_repos, repo_type)
 	    
 	raw_response = self.query_artifactory(query)
-	if raw_response.status_code == 404:
-	    return None
+	if raw_response is None:
+	    return raw_response
 	response = json.loads(raw_response.text)
 
-	for repo in response:
-	    repositories.append(repo["key"])
-	    
+	for line in response:
+	    for item in line:
+		repositories.append(line["key"])
+
 	if repositories:
 	    return repositories
 	  
@@ -145,6 +151,12 @@ class Party:
 	@param: repo_type - Optional. Values are local|virtual|remote.
 	@param: max_depth - Optional. How many directories deep to search. Defaults to 10.
 	"""
+	
+	# Ensure filename is specified
+	if not filename:
+	    errmsg = "No filename specified."
+	    raise ValueError(errmsg)
+	    return False	    
 	
 	# Validate specified repo type
 	repo_types = [ "local", "virtual", "remote", None ]
@@ -163,7 +175,7 @@ class Party:
 	# Create pattern list
 	patterns = []
 	# Adjust max_depth to determine how many (inclusive) directories deep on the path to search
-	for p in range(1, max_depth):
+	for p in range(0, max_depth):
 	    patterns.append("*/" * p)
 	
 	if specific_repo is not None:
@@ -177,8 +189,8 @@ class Party:
 	    for pattern in patterns:
 		query = "%s/search/pattern?pattern=%s:%s%s" % (self.artifactory_url, repo, pattern, filename)
 		raw_response = self.query_artifactory(query)
-		if raw_response.status_code == 404:
-		    return None
+		if raw_response is None:
+		    return raw_response
 		response = json.loads(raw_response.text)
 		
 		try:
@@ -187,7 +199,6 @@ class Party:
 			    results.append("%s/%s" % (response['repoUri'], i))
 		except KeyError:
 		    pass
-	
 	if not results:
 	    return None
 	
