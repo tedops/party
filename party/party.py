@@ -90,9 +90,9 @@ class Party:
 	@param: properties - Optional. List of properties to help filter results.
 	"""
 	if properties:
-	    query = "%s/?properties=%s" % (filename, ",".join(properties))
+	    query = "%s?properties=%s" % (filename, ",".join(properties))
 	else:
-	    query = "%s/?properties" % filename
+	    query = "%s?properties" % filename
 
 	raw_response = self.query_artifactory(query)
 	if raw_response is None:
