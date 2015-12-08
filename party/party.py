@@ -4,8 +4,11 @@ from party_config import party_config
 class Party:
     
 
-    def __init__(self):
+    def __init__(self, config={}):
 	self.files = []	
+
+        party_config.update(config)
+
 	# Set instance variables for every value in party_config
 	for k, v in party_config.iteritems():
 	    setattr(self, '%s' % (k,), v)
