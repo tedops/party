@@ -4,8 +4,11 @@ from party_config import party_config
 class Party:
     
 
-    def __init__(self):
+    def __init__(self, config={}):
 	self.files = []	
+
+        party_config.update(config)
+
 	# Set instance variables for every value in party_config
 	for k, v in party_config.iteritems():
 	    setattr(self, '%s' % (k,), v)
@@ -74,7 +77,7 @@ class Party:
 		return None
 
 	setattr(self, 'name', filename)
-	setattr(self, 'url', json.dumps(response))
+	setattr(self, 'url', response)
 
 	return "OK"
 
@@ -87,9 +90,9 @@ class Party:
 	@param: properties - Optional. List of properties to help filter results.
 	"""
 	if properties:
-	    query = "%s/?properties=%s" % (filename, ",".join(properties))
+	    query = "%s?properties=%s" % (filename, ",".join(properties))
 	else:
-	    query = "%s/?properties" % filename
+	    query = "%s?properties" % filename
 
 	raw_response = self.query_artifactory(query)
 	if raw_response is None:
