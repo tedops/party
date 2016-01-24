@@ -1,4 +1,9 @@
-v1.6,	29/08/2014
+v1.6,	23/01/2016
+-- Fix query path for getting/setting artifact properties
+-- Fix where self.url in find() should be json, not a string of json
+-- Add optional config parameter to Party()
+-- Fix import so Party() can be found when importing library
+-- Returning response in a json serialized format
 -- Namespace changed to proper 'party'. Name reflects that now.
 -- Added unit tests
 -- Added find_by_pattern feature (partial filename)

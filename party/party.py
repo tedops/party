@@ -77,7 +77,7 @@ class Party:
 		return None
 
 	setattr(self, 'name', filename)
-	setattr(self, 'url', response)
+	setattr(self, 'url', json.dumps(response))
 
 	return "OK"
 
