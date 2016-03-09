@@ -33,6 +33,20 @@ class Party:
 	  
 	return response
 
+    def query_file_info(self, filename):
+        """
+        Send request to Artifactory API endpoint for file details.
+        @param: filename - Required. The shortname of the artifact
+        """
+        query = "%s/storage/%s" % (self.artifactory_url, filename)
+
+	raw_response = self.query_artifactory(query)
+	if raw_response is None:
+	    return raw_response
+	response = json.loads(raw_response.text)
+
+	return response
+
     def find_by_properties(self, properties):
 	"""
 	Look up an artifact, or artifacts, in Artifactory by using artifact properties.
@@ -110,12 +124,10 @@ class Party:
 	@param: filename - Filename of artifact of which to get file info.
 	"""
 
-        query = "%s/storage/%s" % (self.artifactory_url, filename)
+        response = self.query_file_info(filename)
 
-	raw_response = self.query_artifactory(query)
-	if raw_response is None:
-	    return raw_response
-	response = json.loads(raw_response.text)
+	if response is None:
+	    return response
 
 	setattr(self, 'file_info', response)
 	return "OK"
