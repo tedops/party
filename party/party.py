@@ -132,6 +132,18 @@ class Party:
 	setattr(self, 'file_info', response)
 	return "OK"
 
+    def get_file_stats(self, filename):
+	"""
+	Get an artifact's file stats.
+	@param: filename - Filename of artifact of which to get file info.
+	"""
+        filename = '{0}?stats'.format(filename)
+
+        response = self.query_file_info(filename)
+
+	setattr(self, 'file_stats', response)
+	return "OK"
+
     def set_properties(self, file_url, properties):
 	"""
 	Set properties on an artifact.
