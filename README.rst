@@ -25,6 +25,19 @@ Some example code:
 
     artifact.artifactory_url = "http://myserver.com/api"  # <= Runtime config change
 
+Additionally, passing a ``config`` parameter to ``Party()`` will work
+
+.. code:: python
+
+    PARTY_CONFIG = {
+        'artifactory_url': 'https://myserver.com/api',
+        'username': 'api',
+        'password': 'password',
+    }
+
+    artifact = party.Party(config=PARTY_CONFIG)
+
+
 Find Artifact by Name
 =====================
 
