@@ -144,6 +144,18 @@ class Party:
 	setattr(self, 'file_stats', response)
 	return "OK"
 
+    def get_storage_info(self):
+        query = "%s/storageinfo" % (self.artifactory_url)
+
+        raw_response = self.query_artifactory(query)
+        if raw_response is None:
+            return raw_response
+        response = json.loads(raw_response.text)
+
+        setattr(self, 'storage_info', response)
+
+        return 'OK'
+
     def set_properties(self, file_url, properties):
 	"""
 	Set properties on an artifact.
