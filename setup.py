@@ -15,6 +15,5 @@ setup(
     long_description=open('README.rst').read(),
     install_requires=[
         "requests>=2.3.0",
-        "wsgiref>=0.1.2",
     ],
 )
