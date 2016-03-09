@@ -103,6 +103,22 @@ class Party:
 
 	return "OK"
 
+    def get_file_info(self, filename):
+	"""
+	Get an artifact's file info, as defined in the General tab in
+	Artifactory.
+	@param: filename - Filename of artifact of which to get file info.
+	"""
+
+        query = "%s/storage/%s" % (self.artifactory_url, filename)
+
+	raw_response = self.query_artifactory(query)
+	if raw_response is None:
+	    return raw_response
+	response = json.loads(raw_response.text)
+
+	setattr(self, 'file_info', response)
+	return "OK"
 
     def set_properties(self, file_url, properties):
 	"""
