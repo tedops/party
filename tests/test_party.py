@@ -1,4 +1,4 @@
-from party import party
+import party
 from flexmock import flexmock
 from nose.tools import assert_equals, assert_raises, assert_is_instance, set_trace
 import json

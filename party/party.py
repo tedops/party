@@ -1,11 +1,15 @@
-import sys
 import json
 import requests
 import urllib
 import base64
-import re
 import os
-from party_config import party_config
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+
+from .party_config import party_config
 
 
 class Party:
@@ -16,7 +20,7 @@ class Party:
         party_config.update(config)
 
         # Set instance variables for every value in party_config
-        for k, v in party_config.iteritems():
+        for k, v in party_config.items():
             setattr(self, '%s' % (k,), v)
 
     def query_artifactory(self, query, query_type='get'):
@@ -25,17 +29,18 @@ class Party:
         @param: query - Required. The URL (including endpoint) to send to the Artifactory API
         @param: query_type - Optional. CRUD method. Defaults to 'get'.
         """
-        if query_type.lower() == "get":
-            response = requests.get(query, auth=(
-                self.username, base64.b64decode(self.password)), headers=self.headers)
-        elif query_type.lower() == "put":
-            response = requests.put(query, data=query.split('?', 1)[1], auth=(
-                self.username, base64.b64decode(self.password)), headers=self.headers)
-        if query_type.lower() == "post":
+
+        auth = (self.username, base64.b64decode(self.password).decode())
+        query_type = query_type.lower()
+
+        if query_type == "get":
+            response = requests.get(query, auth=auth, headers=self.headers)
+        elif query_type == "put":
+            response = requests.put(query, data=query.split('?', 1)[1], auth=auth, headers=self.headers)
+        if query_type == "post":
             pass
 
-        match = re.search(r'^20.*$', str(response.status_code))
-        if not match:
+        if not response.ok:
             return None
 
         return response
@@ -60,7 +65,7 @@ class Party:
         @param: properties - List of properties to use as search criteria.
         """
         query = "%s/%s?%s" % (self.artifactory_url,
-                              self.search_prop, urllib.urlencode(properties))
+                              self.search_prop, urlencode(properties))
         raw_response = self.query_artifactory(query)
         if raw_response is None:
             return raw_response
@@ -68,7 +73,7 @@ class Party:
         response = json.loads(raw_response.text)
 
         for item in response['results']:
-            for k, v in item.iteritems():
+            for k, v in item.items():
                 setattr(self, '%s' % (k,), v)
 
         if not response['results']:
@@ -119,7 +124,7 @@ class Party:
         if raw_response is None:
             return raw_response
         response = json.loads(raw_response.text)
-        for key, value in response.iteritems():
+        for key, value in response.items():
             setattr(self, '%s' % (key,), value)
 
         return "OK"
@@ -264,6 +269,7 @@ class Party:
                             results.append("%s/%s" % (response['repoUri'], i))
                 except KeyError:
                     pass
+
         if not results:
             return None
 
