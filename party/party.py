@@ -175,7 +175,7 @@ class Party:
         @param: properties - JSON list of properties to set on the artifact.
         """
         query = "%s?properties=%s" % (
-            file_url, urllib.urlencode(properties).replace('&', '|'))
+            file_url, urlencode(properties).replace('&', '|'))
         response = self.query_artifactory(query, "put")
         if response is None:
             return response
