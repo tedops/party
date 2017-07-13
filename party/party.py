@@ -23,11 +23,12 @@ class Party:
         for k, v in party_config.items():
             setattr(self, '%s' % (k,), v)
 
-    def query_artifactory(self, query, query_type='get'):
+    def query_artifactory(self, query, query_type='get', **kwargs):
         """
         Send request to Artifactory API endpoint.
         @param: query - Required. The URL (including endpoint) to send to the Artifactory API
         @param: query_type - Optional. CRUD method. Defaults to 'get'.
+        @param: **kwargs - Extra keyword arguments to pass to :cls:`requests.models.Request`.
         """
 
         auth = (self.username, base64.b64decode(self.password).decode())
@@ -38,7 +39,7 @@ class Party:
         elif query_type == "put":
             response = requests.put(query, data=query.split('?', 1)[1], auth=auth, headers=self.headers)
         if query_type == "post":
-            pass
+            response = requests.post(query, auth=auth, headers=self.headers, **kwargs)
 
         if not response.ok:
             return None
