@@ -47,6 +47,9 @@ class Party:
         if query_type == "post":
             response = requests.post(query, auth=auth, headers=self.headers, **kwargs)
 
+        self.log.debug('Artifactory response: [%d] %s', response.status_code,
+                       response.text)
+
         if not response.ok:
             return None
 
