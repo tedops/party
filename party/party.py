@@ -12,9 +12,10 @@ except ImportError:
 
 from .party_aql import find_by_aql
 from .party_config import party_config
+from .party_request import PartyRequest
 
 
-class Party:
+class Party(PartyRequest):
     """Artifactory API interface.
 
     Attributes:
@@ -31,7 +32,9 @@ class Party:
 
     find_by_aql = find_by_aql
 
-    def __init__(self, config={}):
+    def __init__(self, config={}, *args, **kwargs):
+        super(Party, self).__init__(*args, **kwargs)
+
         self.log = logging.getLogger(__name__)
 
         self.files = []
@@ -40,7 +43,9 @@ class Party:
 
         # Set instance variables for every value in party_config
         for k, v in party_config.items():
-            setattr(self, '%s' % (k,), v)
+            existing_attribute = getattr(self, k, None)
+            if not existing_attribute:
+                setattr(self, '%s' % (k,), v)
 
     def query_artifactory(self, query, query_type='get', **kwargs):
         """
