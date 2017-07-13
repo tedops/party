@@ -1,3 +1,4 @@
+import logging
 import json
 import requests
 import urllib
@@ -18,6 +19,8 @@ class Party:
     find_by_aql = find_by_aql
 
     def __init__(self, config={}):
+        self.log = logging.getLogger(__name__)
+
         self.files = []
 
         party_config.update(config)
