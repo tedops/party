@@ -42,13 +42,27 @@ class Party:
         for k, v in party_config.items():
             setattr(self, '%s' % (k,), v)
 
-    def query_artifactory(self, query, query_type='get', **kwargs):
+    def query_artifactory(self, query, query_type='get', dry=False, **kwargs):
         """
         Send request to Artifactory API endpoint.
+        @param: dry - Optional. Test run request.
         @param: query - Required. The URL (including endpoint) to send to the Artifactory API
         @param: query_type - Optional. CRUD method. Defaults to 'get'.
         @param: **kwargs - Extra keyword arguments to pass to :cls:`requests.models.Request`.
         """
+        if dry:
+            self.log.info('Would send "%s" request to: %s', query_type, query)
+            content = json.dumps({
+                'message': 'Dry mode enabled.',
+                'query': query,
+                'query_type': query_type
+            })
+
+            response = requests.models.Response()
+            response.status_code = 200
+            response._content = content.encode()
+
+            return response
 
         auth = (self.username, base64.b64decode(self.password).decode())
         query_type = query_type.lower()
