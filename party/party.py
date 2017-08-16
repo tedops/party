@@ -13,6 +13,19 @@ from .party_config import party_config
 
 
 class Party:
+    """Artifactory API interface.
+
+    Attributes:
+        artifactory_url (str): Artifactory Instance API URL, e.g.
+            http://instance.jfrog.io/instance/api.
+        headers (dict): Custom request headers.
+        password (str): Authentication password base64 encoded.
+        search_name (str): Artifact search endpoint (default: search/artifact).
+        search_prop (str): Property search endpoint (default: search/prop).
+        search_repos (str): Repositories list endpoint (default: repositories).
+        username (str): Authentication username.
+
+    """
 
     def __init__(self, config={}):
         self.files = []
