@@ -10,6 +10,7 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
+from .exceptions import UnknownQueryType
 from .party_aql import find_by_aql
 from .party_config import party_config
 from .party_request import PartyRequest
@@ -62,8 +63,10 @@ class Party(PartyRequest):
             response = requests.get(query, auth=auth, headers=self.headers)
         elif query_type == "put":
             response = requests.put(query, data=query.split('?', 1)[1], auth=auth, headers=self.headers)
-        if query_type == "post":
+        elif query_type == "post":
             response = requests.post(query, auth=auth, headers=self.headers, **kwargs)
+        else:
+            raise UnknownQueryType('Unsupported query type: %s' % query_type)
 
         self.log.debug('Artifactory response: [%d] %s', response.status_code,
                        response.text)
