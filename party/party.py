@@ -10,11 +10,13 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
+from .exceptions import UnknownQueryType
 from .party_aql import find_by_aql
 from .party_config import party_config
+from .party_request import PartyRequest
 
 
-class Party:
+class Party(PartyRequest):
     """Artifactory API interface.
 
     Attributes:
@@ -31,7 +33,9 @@ class Party:
 
     find_by_aql = find_by_aql
 
-    def __init__(self, config={}):
+    def __init__(self, config={}, *args, **kwargs):
+        super(Party, self).__init__(*args, **kwargs)
+
         self.log = logging.getLogger(__name__)
 
         self.files = []
@@ -40,15 +44,31 @@ class Party:
 
         # Set instance variables for every value in party_config
         for k, v in party_config.items():
-            setattr(self, '%s' % (k,), v)
+            existing_attribute = getattr(self, k, None)
+            if not existing_attribute:
+                setattr(self, '%s' % (k,), v)
 
-    def query_artifactory(self, query, query_type='get', **kwargs):
+    def query_artifactory(self, query, query_type='get', dry=False, **kwargs):
         """
         Send request to Artifactory API endpoint.
+        @param: dry - Optional. Test run request.
         @param: query - Required. The URL (including endpoint) to send to the Artifactory API
         @param: query_type - Optional. CRUD method. Defaults to 'get'.
         @param: **kwargs - Extra keyword arguments to pass to :cls:`requests.models.Request`.
         """
+        if dry:
+            self.log.info('Would send "%s" request to: %s', query_type, query)
+            content = json.dumps({
+                'message': 'Dry mode enabled.',
+                'query': query,
+                'query_type': query_type
+            })
+
+            response = requests.models.Response()
+            response.status_code = 200
+            response._content = content.encode()
+
+            return response
 
         auth = (self.username, base64.b64decode(self.password).decode())
         query_type = query_type.lower()
@@ -61,6 +81,8 @@ class Party:
             response = requests.delete(query, auth=auth, headers=self.headers)
         if query_type == "post":
             response = requests.post(query, auth=auth, headers=self.headers, **kwargs)
+        else:
+            raise UnknownQueryType('Unsupported query type: %s' % query_type)
 
         self.log.debug('Artifactory response: [%d] %s', response.status_code,
                        response.text)
