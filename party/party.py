@@ -77,7 +77,9 @@ class Party(PartyRequest):
             response = requests.get(query, auth=auth, headers=self.headers)
         elif query_type == "put":
             response = requests.put(query, data=query.split('?', 1)[1], auth=auth, headers=self.headers)
-        elif query_type == "post":
+        elif query_type == 'delete':
+            response = requests.delete(query, auth=auth, headers=self.headers)
+        if query_type == "post":
             response = requests.post(query, auth=auth, headers=self.headers, **kwargs)
         else:
             raise UnknownQueryType('Unsupported query type: %s' % query_type)
