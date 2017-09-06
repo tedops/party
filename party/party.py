@@ -74,13 +74,13 @@ class Party(PartyRequest):
         query_type = query_type.lower()
 
         if query_type == "get":
-            response = requests.get(query, auth=auth, headers=self.headers)
+            response = requests.get(query, auth=auth, headers=self.headers, verify=self.certbundle)
         elif query_type == "put":
-            response = requests.put(query, data=query.split('?', 1)[1], auth=auth, headers=self.headers)
+            response = requests.put(query, data=query.split('?', 1)[1], auth=auth, headers=self.headers, verify=self.certbundle)
         elif query_type == 'delete':
-            response = requests.delete(query, auth=auth, headers=self.headers)
+            response = requests.delete(query, auth=auth, headers=self.headers, verify=self.certbundle)
         elif query_type == "post":
-            response = requests.post(query, auth=auth, headers=self.headers, **kwargs)
+            response = requests.post(query, auth=auth, headers=self.headers, verify=self.certbundle, **kwargs)
         else:
             raise UnknownQueryType('Unsupported query type: %s' % query_type)
 

@@ -5,5 +5,6 @@ party_config = {
     'search_repos': 'repositories',
     'username': 'your-user',
     'password': 'base64-encoded-password',
-    'headers': {'Content-type': 'application/json'}
+    'headers': {'Content-type': 'application/json'},
+    'certbundle': ''
 }
