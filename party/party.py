@@ -215,6 +215,24 @@ class Party(PartyRequest):
 
         return 'OK'
 
+    def delete_item(self, item_path):
+        """
+        Deletes a file or a folder from the specified destination in Artifactory.
+        @param: item_path - Path of artifactory file/folder of which to be deleted.
+        Example Path: '/repo-key/path/to/file-or-folder'
+        """
+
+        query = "%s/%s" % (self.artifactory_url.replace('/api', ''), item_path)
+        # Must remove the '/api' entry point according to Artifactory RestAPI documentation
+        response = self.query_artifactory(query, "delete")
+        if response is None:
+            # response is equal to null when artifactory couldn't find the file
+            return "OK nothing to delete"
+        if response.status_code == 204:
+            # response is equal to 204 when artifactory finds and delete a folder
+            return "OK"
+        return response
+
     def set_properties(self, file_url, properties):
         """
         Set properties on an artifact.
